@@ -1,0 +1,15 @@
+{
+    "manifest_version": 3,
+    "name": "MangaDex Vim Keys",
+    "version": "0.1.0",
+    "description": "Simple Vim-style controls for the MangaDex reader.",
+    "content_scripts": [
+        {
+            "matches": [
+                "https://mangadex.org/*"
+            ],
+            "js": ["content.js"],
+            "run_at": "document_idle"
+        }
+    ]
+}
