@@ -1,7 +1,11 @@
 (() => {
   "use strict";
 
-  const NOTES_SELECTOR = '.game-controls-item[data-action="pencil"]';
+  const SELECTOR = {
+    Undo: '.game-controls-item[data-action="undo"]',
+    Erase: '.game-controls-item[data-action="erase"]',
+    Pencil: '.game-controls-item[data-action="pencil"]',
+  };
 
   const IGNORED_TARGETS =
     "input, textarea, [contenteditable='true']";
@@ -18,20 +22,49 @@
       return;
     }
 
-    // Space -> toggle Notes
-    if (event.code === "Space" && !event.repeat) {
-      event.preventDefault();
+    // Extend keys to toggle/click return and erase
+    if(!event.repeat) {
+      switch (event.code) {
+        case "KeyZ":
+        event.preventDefault();
 
-      document.querySelector(NOTES_SELECTOR)?.dispatchEvent(
-        new MouseEvent("mousedown", {
-          bubbles: true,
-          cancelable: true,
-          view: window,
-        }),
-      );
+        document.querySelector(SELECTOR.Undo)?.dispatchEvent(
+          new MouseEvent("mousedown", {
+            bubbles: true,
+            cancelable: true,
+            view: window,
+          }),
+        );
+        
+        break;
 
-      return;
+        case "KeyE":
+        event.preventDefault();
+
+        document.querySelector(SELECTOR.Erase)?.dispatchEvent(
+          new MouseEvent("mousedown", {
+            bubbles: true,
+            cancelable: true,
+            view: window,
+          }),
+        );
+        
+      break;
+
+      case "Space":
+        event.preventDefault();
+
+        document.querySelector(SELECTOR.Pencil)?.dispatchEvent(
+          new MouseEvent("mousedown", {
+            bubbles: true,
+            cancelable: true,
+            view: window,
+          }),
+        );
+        
+      break;
     }
+  }
 
     // WASD -> Arrow keys
     const mapping = ARROW_KEYS[event.code];
