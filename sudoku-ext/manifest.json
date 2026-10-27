@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Sudoku WASD Controls",
+  "name": "Enhancement of Sudoku.com Controls",
   "version": "0.1.3",
-  "description": "WASD navigation and Space pencil mode for Sudoku.com",
+  "description": "WASD navigation and a few shortcuts for Sudoku.com",
   "content_scripts": [
     {
       "matches": ["https://sudoku.com/*"],

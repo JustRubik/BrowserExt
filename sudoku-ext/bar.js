@@ -1,9 +1,11 @@
+// Providing a command bar for fast movement
 (() => {
   "use strict";
 
   let bar = null;
-  let input = null;
+  let display = null;
   let active = false;
+  let row = 0;
 
   function create() {
     if (bar) return;
@@ -16,32 +18,23 @@
       left: "50%",
       bottom: "24px",
       transform: "translateX(-50%)",
-
       display: "none",
       alignItems: "center",
-
       minWidth: "280px",
       height: "36px",
       padding: "0 12px",
-
       boxSizing: "border-box",
-
       background: "#202124",
       color: "#e8eaed",
-
       border: "1px solid #5f6368",
       borderRadius: "6px",
-
       boxShadow: "0 4px 16px rgba(0, 0, 0, 0.35)",
-
       fontFamily: "monospace",
       fontSize: "15px",
-
       zIndex: "2147483647",
     });
 
     const prompt = document.createElement("span");
-
     prompt.textContent = "T: ";
 
     Object.assign(prompt.style, {
@@ -50,17 +43,14 @@
       fontWeight: "bold",
     });
 
-    input = document.createElement("span");
+    display = document.createElement("span");
 
-    Object.assign(input.style, {
+    Object.assign(display.style, {
       minWidth: "20px",
       whiteSpace: "pre",
-      outline: "none",
     });
 
-    bar.appendChild(prompt);
-    bar.appendChild(input);
-
+    bar.append(prompt, display);
     document.body.appendChild(bar);
   }
 
@@ -68,81 +58,68 @@
     create();
 
     active = true;
-
-    input.textContent = "";
-
+    row = 0;
+    display.textContent = "";
     bar.style.display = "flex";
   }
 
   function close() {
-    if (!bar) return;
-
     active = false;
+    row = 0;
 
-    bar.style.display = "none";
-    input.textContent = "";
+    if (bar) {
+      bar.style.display = "none";
+      display.textContent = "";
+    }
   }
 
-  function submit() {
-    const command = input.textContent;
+  function moveToCell(row, col) {
+    window.dispatchEvent(
+      new CustomEvent("sudoku:move-to-cell", {
+        detail: {
+          row,
+          col,
+          index: 9 * (row - 1) + (col - 1),
+        },
+      }),
+    );
+  }
 
-    console.log("[Command]", command);
+  function handleKey(event) {
+    if (event.key === "Escape") {
+      close();
+      return;
+    }
 
+    if (event.repeat || !/^[1-9]$/.test(event.key)) {
+      return;
+    }
+
+    const digit = Number(event.key);
+
+    if (row === 0) {
+      row = digit;
+      display.textContent = String(digit);
+      return;
+    }
+
+    const col = digit;
+    display.textContent += String(col);
+
+    moveToCell(row, col);
     close();
-
-    // Sau này:
-    // commandDispatcher(command);
   }
 
   document.addEventListener(
     "keydown",
     (event) => {
-      /*
-       * Command mode
-       */
       if (active) {
         event.preventDefault();
-        event.stopPropagation();
-
-        if (event.key === "Escape") {
-          close();
-          return;
-        }
-
-        if (event.key === "Enter") {
-          submit();
-          return;
-        }
-
-        /*
-         * Chỉ nhận ký tự bình thường.
-         *
-         * Ví dụ:
-         * T -> "t"
-         * 3 -> "3"
-         */
-        if (
-          event.key.length === 1 &&
-          !event.ctrlKey &&
-          !event.altKey &&
-          !event.metaKey
-        ) {
-          input.textContent += event.key;
-        }
-
-        /*
-         * Backspace
-         */
-        if (event.key === "Backspace") {
-          input.textContent = input.textContent.slice(0, -1);
-        }
-
+        event.stopImmediatePropagation();
+        handleKey(event);
         return;
       }
 
-      /*
-       * Normal mode
-       */
       if (
         event.code === "KeyT" &&
         !event.repeat &&
@@ -151,8 +128,7 @@
         !event.metaKey
       ) {
         event.preventDefault();
-        event.stopPropagation();
-
+        event.stopImmediatePropagation();
         open();
       }
     },
@@ -163,6 +139,5 @@
     open,
     close,
     isActive: () => active,
-    getValue: () => input?.textContent ?? "",
   };
 })();
