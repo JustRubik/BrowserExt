@@ -1,3 +1,5 @@
+// Enhance movement in playing sudoku
+
 (() => {
   "use strict";
 
@@ -23,7 +25,7 @@
     }
 
     // Extend keys to toggle/click return and erase
-    if(!event.repeat) {
+    // if(!event.repeat) {
       switch (event.code) {
         case "KeyZ":
         event.preventDefault();
@@ -63,7 +65,7 @@
         );
         
       break;
-    }
+    // }
   }
 
     // WASD -> Arrow keys
