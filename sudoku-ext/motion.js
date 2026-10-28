@@ -27,7 +27,7 @@
     // Extend keys to toggle/click return and erase
     // if(!event.repeat) {
       switch (event.code) {
-        case "KeyZ":
+        case "KeyQ":
         event.preventDefault();
 
         document.querySelector(SELECTOR.Undo)?.dispatchEvent(
